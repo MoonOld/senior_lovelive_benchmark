@@ -20,3 +20,4 @@ out/
 !/data/processed/handle_song_coverage_analysis.json
 /data/exports/
 /data/cache/
+.vercel
