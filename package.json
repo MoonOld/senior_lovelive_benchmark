@@ -1,0 +1,34 @@
+{
+  "name": "senior-lovelive-benchmark",
+  "version": "0.1.0",
+  "description": "LoveLive 相关演出与 setlist 数据采集工具。",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoonOld/senior_lovelive_benchmark.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/MoonOld/senior_lovelive_benchmark/issues"
+  },
+  "homepage": "https://github.com/MoonOld/senior_lovelive_benchmark#readme",
+  "dependencies": {
+    "next": "^16.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
+  }
+}
