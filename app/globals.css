@@ -584,6 +584,19 @@ h3 {
   text-decoration: none;
 }
 
+.site-footer {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 36px;
+  text-align: center;
+}
+
+.site-footer a {
+  color: var(--accent-2);
+  font-weight: 800;
+  text-decoration: none;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

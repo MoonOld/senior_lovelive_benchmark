@@ -144,7 +144,6 @@ export function CoverageExplorer() {
             <button className="ghost-button" disabled={isLoading} onClick={tryDemo} type="button">
               试用 {DEMO_HANDLE}
             </button>
-            <span>接口：GET /api/coverage?handle=&lt;username&gt;</span>
             <span>本站不会保存查询的用户名或统计结果</span>
           </div>
           {error ? <p className="form-error">{error}</p> : null}
@@ -153,6 +152,13 @@ export function CoverageExplorer() {
 
       {isLoading ? <LoadingState /> : null}
       {coverage ? <CoverageResult coverage={coverage} /> : null}
+      <footer className="site-footer">
+        感谢{" "}
+        <a href="https://ll-fans.jp/" rel="noreferrer" target="_blank">
+          LL-Fans
+        </a>{" "}
+        的数据支持
+      </footer>
     </main>
   );
 }
