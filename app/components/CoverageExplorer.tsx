@@ -62,14 +62,14 @@ type ApiError = {
 
 const DEMO_HANDLE = "Tetsuya_Ryusei";
 const GROUP_THEMES: Record<string, { color: string; soft: string; deep: string }> = {
-  Aqours: { color: "#1597e5", soft: "rgba(21, 151, 229, 0.13)", deep: "#0867a3" },
-  "μ’s": { color: "#f05ca8", soft: "rgba(240, 92, 168, 0.14)", deep: "#b52d77" },
-  虹ヶ咲学園スクールアイドル同好会: { color: "#f59e0b", soft: "rgba(245, 158, 11, 0.15)", deep: "#ad6500" },
-  "Liella!": { color: "#7c5cff", soft: "rgba(124, 92, 255, 0.13)", deep: "#4d35c6" },
-  蓮ノ空女学院スクールアイドルクラブ: { color: "#10b981", soft: "rgba(16, 185, 129, 0.13)", deep: "#087a57" },
-  "いきづらい部！": { color: "#ef4444", soft: "rgba(239, 68, 68, 0.12)", deep: "#b91c1c" },
-  幻日のヨハネ: { color: "#4f46e5", soft: "rgba(79, 70, 229, 0.13)", deep: "#312e81" },
-  スクールアイドルミュージカル: { color: "#14b8a6", soft: "rgba(20, 184, 166, 0.13)", deep: "#0f766e" },
+  Aqours: { color: "#42b8dd", soft: "rgba(66, 184, 221, 0.14)", deep: "#137ea2" },
+  "μ’s": { color: "#e64aa3", soft: "rgba(230, 74, 163, 0.14)", deep: "#b42378" },
+  虹ヶ咲学園スクールアイドル同好会: { color: "#e6c84d", soft: "rgba(230, 200, 77, 0.18)", deep: "#a67b00" },
+  "Liella!": { color: "#c65abd", soft: "rgba(198, 90, 189, 0.14)", deep: "#8e2f86" },
+  蓮ノ空女学院スクールアイドルクラブ: { color: "#d98aa5", soft: "rgba(217, 138, 165, 0.16)", deep: "#a64f6b" },
+  "いきづらい部！": { color: "#b98b52", soft: "rgba(185, 139, 82, 0.15)", deep: "#7b5426" },
+  幻日のヨハネ: { color: "#4aa7d8", soft: "rgba(74, 167, 216, 0.14)", deep: "#1b6f9a" },
+  スクールアイドルミュージカル: { color: "#caa94a", soft: "rgba(202, 169, 74, 0.16)", deep: "#8d6b16" },
 };
 const DEFAULT_GROUP_THEME = { color: "#ff5c9a", soft: "rgba(255, 92, 154, 0.13)", deep: "#bd2c62" };
 
