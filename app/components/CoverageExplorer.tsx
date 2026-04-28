@@ -60,6 +60,13 @@ type ApiError = {
   error: string;
 };
 
+type SeniorityVerdict = {
+  level: "legend" | "veteran" | "regular" | "rookie";
+  title: string;
+  description: string;
+  reasons: string[];
+};
+
 const DEMO_HANDLE = "Tetsuya_Ryusei";
 const GROUP_THEMES: Record<string, { color: string; soft: string; deep: string }> = {
   Aqours: { color: "#42b8dd", soft: "rgba(66, 184, 221, 0.14)", deep: "#137ea2" },
@@ -83,7 +90,7 @@ export function CoverageExplorer() {
     event?.preventDefault();
     const normalizedHandle = nextHandle.trim();
     if (!normalizedHandle) {
-      setError("请输入 Eventernote 用户名。");
+      setError("先交出 Eventernote 用户名，老资历鉴定才开工。");
       return;
     }
     setIsLoading(true);
@@ -93,11 +100,11 @@ export function CoverageExplorer() {
       const response = await fetch(`/api/coverage?handle=${encodeURIComponent(normalizedHandle)}`);
       const data = (await response.json()) as CoverageAnalysis | ApiError;
       if (!response.ok) {
-        throw new Error("error" in data ? data.error : "统计失败，请稍后重试。");
+        throw new Error("error" in data ? data.error : "鉴定失败了，可能是 Eventernote 今天也在摆烂。稍后再试。");
       }
       setCoverage(data as CoverageAnalysis);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "统计失败，请稍后重试。");
+      setError(caught instanceof Error ? caught.message : "鉴定失败了，可能是 Eventernote 今天也在摆烂。稍后再试。");
     } finally {
       setIsLoading(false);
     }
@@ -112,10 +119,10 @@ export function CoverageExplorer() {
     <main className="app-shell">
       <section className="hero-card">
         <div className="hero-copy">
-          <p className="eyebrow">LoveLive! Live Song Coverage</p>
-          <h1>现场听歌覆盖率统计</h1>
+          <p className="eyebrow">老资历审查委员会</p>
+          <h1>LoveLive 老资历程度鉴定</h1>
           <p className="lead">
-            输入 Eventernote 用户名，自动读取参加活动，并与 LoveLive 活动库、LL-Fans setlist、唱片曲库进行匹配。
+            输入 Eventernote 用户名，看看你到底只是路过沼津，还是已经在会场地板上长出了年轮。
           </p>
         </div>
 
@@ -137,14 +144,14 @@ export function CoverageExplorer() {
               value={handle}
             />
             <button disabled={isLoading} type="submit">
-              {isLoading ? "统计中..." : "开始统计"}
+              {isLoading ? "翻牌中..." : "开始鉴定"}
             </button>
           </div>
           <div className="helper-row">
             <button className="ghost-button" disabled={isLoading} onClick={tryDemo} type="button">
               试用 {DEMO_HANDLE}
             </button>
-            <span>本站不会保存查询的用户名或统计结果</span>
+            <span>本站不留案底，不保存查询的用户名或统计结果</span>
           </div>
           {error ? <p className="form-error">{error}</p> : null}
         </form>
@@ -169,6 +176,7 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
     () => Object.entries(coverage.groups).sort(([, left], [, right]) => right.coverage_percent - left.coverage_percent),
     [coverage.groups],
   );
+  const verdict = useMemo(() => buildSeniorityVerdict(summary, coverage.groups), [coverage.groups, summary]);
   const [selectedGroupName, setSelectedGroupName] = useState(groups[0]?.[0] ?? "");
   const selectedGroup = selectedGroupName ? coverage.groups[selectedGroupName] : undefined;
 
@@ -182,16 +190,18 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
     <section className="result-stack">
       <div className="result-header">
         <div>
-          <p className="eyebrow">Result</p>
-          <h2>{summary.handle} 的 LoveLive 覆盖率</h2>
+          <p className="eyebrow">鉴定书已出</p>
+          <h2>{summary.handle} 的老资历鉴定书</h2>
         </div>
         {coverage.generated_at ? <span className="timestamp">生成于 {new Date(coverage.generated_at).toLocaleString()}</span> : null}
       </div>
 
+      <SeniorityCard verdict={verdict} />
+
       <div className="stats-grid">
-        <Metric label="Eventernote 活动" value={summary.user_event_count ?? 0} />
-        <Metric label="LoveLive 活动" value={summary.matched_lovelive_event_count ?? 0} />
-        <Metric label="听过歌曲" value={summary.unique_heard_song_count} />
+        <Metric label="翻到的活动" value={summary.user_event_count ?? 0} />
+        <Metric label="命中的拉拉现场" value={summary.matched_lovelive_event_count ?? 0} />
+        <Metric label="现场听过的歌" value={summary.unique_heard_song_count} />
       </div>
 
       <div className="group-grid">
@@ -211,7 +221,7 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
               <div>
                 <h3>{groupName}</h3>
                 <p>
-                  {group.heard_count} / {group.total_count} 首已覆盖
+                  已解锁 {group.heard_count} / {group.total_count} 首
                 </p>
               </div>
               <strong>{group.coverage_percent.toFixed(2)}%</strong>
@@ -228,12 +238,12 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
               ))}
               {group.heard_songs.length === 0 ? (
                 <li>
-                  <span>还没有匹配到歌曲</span>
+                  <span>这个团暂时还没开张</span>
                   <small>0 songs</small>
                 </li>
               ) : null}
             </ul>
-            <div className="card-action">查看歌曲明细</div>
+            <div className="card-action">展开资历明细</div>
           </article>
         ))}
       </div>
@@ -244,7 +254,7 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
 
       <section className="events-panel">
         <div className="section-title">
-          <h2>匹配到的活动</h2>
+          <h2>被翻出来的现场</h2>
           <span>{coverage.input_events.length} events</span>
         </div>
         <ul className="event-list">
@@ -254,7 +264,7 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
                 {event.title}
               </a>
               <span>
-                {[event.event_date ?? "unknown", event.start_time].filter(Boolean).join(" ")} · songs=
+                {[event.event_date ?? "unknown", event.start_time].filter(Boolean).join(" ")} · 现场歌曲=
                 {event.heard_song_count ?? 0}
               </span>
             </li>
@@ -270,11 +280,11 @@ function GroupSongDetail({ group, groupName, style }: { group: GroupCoverage; gr
     <section className="song-detail-panel" style={style}>
       <div className="section-title detail-title">
         <div>
-          <p className="eyebrow">Song Detail</p>
+          <p className="eyebrow">资历明细</p>
           <h2>{groupName}</h2>
         </div>
         <span>
-          已覆盖 {group.heard_count} / 未覆盖 {group.unheard_count}
+          现场听过 {group.heard_count} / 还没逮到 {group.unheard_count}
         </span>
       </div>
 
@@ -282,7 +292,7 @@ function GroupSongDetail({ group, groupName, style }: { group: GroupCoverage; gr
         <div className="song-status-column covered">
           <div className="song-status-heading">
             <span className="status-dot" />
-            <h3>已覆盖</h3>
+            <h3>已经在现场听过</h3>
             <strong>{group.heard_count}</strong>
           </div>
           <ul className="song-detail-list">
@@ -295,17 +305,17 @@ function GroupSongDetail({ group, groupName, style }: { group: GroupCoverage; gr
                     {song.appearances ?? 0} 次
                   </p>
                 </div>
-                <span className="song-badge covered">covered</span>
+                <span className="song-badge covered">听过</span>
               </li>
             ))}
-            {group.heard_songs.length === 0 ? <EmptySongItem label="还没有覆盖歌曲" /> : null}
+            {group.heard_songs.length === 0 ? <EmptySongItem label="这栏还空着，资历正在加载中" /> : null}
           </ul>
         </div>
 
         <div className="song-status-column uncovered">
           <div className="song-status-heading">
             <span className="status-dot" />
-            <h3>未覆盖</h3>
+            <h3>还没在现场逮到</h3>
             <strong>{group.unheard_count}</strong>
           </div>
           <ul className="song-detail-list">
@@ -320,14 +330,31 @@ function GroupSongDetail({ group, groupName, style }: { group: GroupCoverage; gr
                       {source ? ` · ${source}` : ""}
                     </p>
                   </div>
-                  <span className="song-badge uncovered">missing</span>
+                  <span className="song-badge uncovered">待逮捕</span>
                 </li>
               );
             })}
-            {group.unheard_songs.length === 0 ? <EmptySongItem label="这个团体已经全部覆盖" /> : null}
+            {group.unheard_songs.length === 0 ? <EmptySongItem label="这个团已经被你盘包浆了" /> : null}
           </ul>
         </div>
       </div>
+    </section>
+  );
+}
+
+function SeniorityCard({ verdict }: { verdict: SeniorityVerdict }) {
+  return (
+    <section className={`seniority-card ${verdict.level}`}>
+      <div>
+        <p className="eyebrow">老资历判定</p>
+        <h3>{verdict.title}</h3>
+        <p>{verdict.description}</p>
+      </div>
+      <ul>
+        {verdict.reasons.map((reason) => (
+          <li key={reason}>{reason}</li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -337,7 +364,7 @@ function EmptySongItem({ label }: { label: string }) {
     <li className="song-detail-item empty-song">
       <div>
         <strong>{label}</strong>
-        <p>换一个团体或补充更多活动后再查看。</p>
+        <p>换个团体看看，或者下一场继续攒资历。</p>
       </div>
     </li>
   );
@@ -349,7 +376,7 @@ function LoadingState() {
       <div className="loader" />
       <div>
         <h2>正在统计</h2>
-        <p>正在访问 Eventernote 并计算歌曲覆盖率，通常需要几秒钟。</p>
+        <p>正在翻 Eventernote 小本本，资历越老，翻牌越久。</p>
       </div>
     </section>
   );
@@ -379,4 +406,51 @@ function groupThemeStyle(groupName: string): CSSProperties {
     "--group-soft": theme.soft,
     "--group-deep": theme.deep,
   } as CSSProperties;
+}
+
+function buildSeniorityVerdict(summary: CoverageSummary, groups: Record<string, GroupCoverage>): SeniorityVerdict {
+  const liveEventCount = summary.matched_lovelive_event_count ?? summary.matched_event_count ?? 0;
+  const heardSongCount = summary.unique_heard_song_count ?? 0;
+  const topGroup = Object.entries(groups).reduce<{ name: string; coverage: GroupCoverage } | null>((best, [name, coverage]) => {
+    if (!best || coverage.coverage_percent > best.coverage.coverage_percent) {
+      return { name, coverage };
+    }
+    return best;
+  }, null);
+  const topGroupText = topGroup
+    ? `${topGroup.name} 覆盖率 ${topGroup.coverage.coverage_percent.toFixed(2)}%`
+    : "还没有团体覆盖率数据";
+  const topCoverage = topGroup?.coverage.coverage_percent ?? 0;
+  const reasons = [`命中的拉拉现场：${liveEventCount} 场`, topGroupText, `现场听过的歌：${heardSongCount} 首`];
+
+  if (liveEventCount >= 20 || topCoverage >= 60) {
+    return {
+      level: "legend",
+      title: "老资历，给你跪了",
+      description: "这已经不是普通参加活动了，这是把时间线踩出包浆的程度。",
+      reasons,
+    };
+  }
+  if (liveEventCount >= 10 || topCoverage >= 35) {
+    return {
+      level: "veteran",
+      title: "资历很硬，已经不是普通观众了",
+      description: "你不是路过会场，你是在会场附近拥有精神房产。",
+      reasons,
+    };
+  }
+  if (liveEventCount >= 3 || topCoverage >= 15) {
+    return {
+      level: "regular",
+      title: "入坑姿势很稳，年轮开始长了",
+      description: "已经能看出明显活动轨迹，再多跑几场就要被叫前辈了。",
+      reasons,
+    };
+  }
+  return {
+    level: "rookie",
+    title: "资历刚起步，下一场就安排",
+    description: "小本本还很清爽，说明未来还有大量名场面等你解锁。",
+    reasons,
+  };
 }

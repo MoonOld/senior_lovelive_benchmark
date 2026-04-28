@@ -267,6 +267,75 @@ h3 {
   font-size: 13px;
 }
 
+.seniority-card {
+  align-items: flex-start;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 239, 247, 0.82)),
+    var(--panel);
+  border: 1px solid rgba(255, 92, 154, 0.2);
+  border-radius: 30px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  overflow: hidden;
+  padding: 24px;
+  position: relative;
+}
+
+.seniority-card::before {
+  background: linear-gradient(180deg, var(--accent), #ff8f5c);
+  content: "";
+  inset: 0 auto 0 0;
+  position: absolute;
+  width: 6px;
+}
+
+.seniority-card.legend {
+  border-color: rgba(255, 92, 154, 0.34);
+}
+
+.seniority-card.veteran {
+  border-color: rgba(91, 124, 250, 0.24);
+}
+
+.seniority-card.regular {
+  border-color: rgba(16, 182, 166, 0.24);
+}
+
+.seniority-card.rookie {
+  border-color: rgba(185, 139, 82, 0.24);
+}
+
+.seniority-card h3 {
+  font-size: clamp(24px, 4vw, 38px);
+  letter-spacing: -0.04em;
+  margin-bottom: 10px;
+}
+
+.seniority-card p {
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.seniority-card ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.seniority-card li {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--text);
+  font-weight: 800;
+  padding: 12px 14px;
+}
+
 .stats-grid,
 .group-grid {
   display: grid;
@@ -610,6 +679,10 @@ h3 {
 
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .seniority-card {
+    grid-template-columns: 1fr;
   }
 
   .song-status-grid {
