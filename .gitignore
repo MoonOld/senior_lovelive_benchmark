@@ -12,6 +12,7 @@ build/
 *.egg-info/
 node_modules/
 .next/
+next-env.d.ts
 out/
 .vercel/
 
