@@ -15,10 +15,11 @@ LIVEFANS_PAGES ?= 1
 LIVEFANS_EVENT_QUERIES ?= 3
 THRESHOLD ?= 55
 TOP_N ?= 2
+WEB_PORT ?= 3000
 
 .PHONY: help venv install clean-data cli-help \
 	crawl-eventernote crawl-main-group-eventernote crawl-llfans crawl-livefans crawl-setlists crawl-setlists-with-setlistfm \
-	match export sample full compile
+	match export sample full compile dev restart-dev
 
 help:
 	@echo "Targets:"
@@ -34,6 +35,8 @@ help:
 	@echo "  make crawl-setlists-with-setlistfm  Crawl LL-Fans plus setlist.fm"
 	@echo "  make match                      Generate JSONL matches"
 	@echo "  make export                     Export Markdown summary"
+	@echo "  make dev                        Start local Next.js dev server"
+	@echo "  make restart-dev                Restart local Next.js dev server"
 	@echo "  make clean-data                 Remove generated data outputs"
 	@echo ""
 	@echo "Variables:"
@@ -43,6 +46,7 @@ help:
 	@echo "  EVENT_PAGES=$(EVENT_PAGES) LLFANS_CANDIDATES=$(LLFANS_CANDIDATES)"
 	@echo "  LIVEFANS_PAGES=$(LIVEFANS_PAGES) LIVEFANS_EVENT_QUERIES=$(LIVEFANS_EVENT_QUERIES)"
 	@echo "  DELAY=$(DELAY) THRESHOLD=$(THRESHOLD) TOP_N=$(TOP_N)"
+	@echo "  WEB_PORT=$(WEB_PORT)"
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -56,6 +60,13 @@ compile:
 
 cli-help:
 	$(CLI) --help
+
+dev:
+	npm run dev -- --port $(WEB_PORT)
+
+restart-dev:
+	@for pid in $$(lsof -ti tcp:$(WEB_PORT) || true); do kill "$$pid" || true; done
+	npm run dev -- --port $(WEB_PORT)
 
 crawl-eventernote:
 	$(CLI) crawl-eventernote \
