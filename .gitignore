@@ -15,9 +15,13 @@ node_modules/
 out/
 .vercel/
 
-/data/raw/
+/data/raw/*
+!/data/raw/eventernote_main_groups_events.jsonl
+!/data/raw/llfans_all_setlists.jsonl
 /data/processed/*
 !/data/processed/handle_song_coverage_analysis.json
+!/data/processed/group_song_index.json
+!/data/processed/main_groups_event_setlist_matches.jsonl
 /data/exports/
 /data/cache/
 .vercel

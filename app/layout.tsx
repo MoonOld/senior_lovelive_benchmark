@@ -4,8 +4,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Senior LoveLive Benchmark",
-  description: "LoveLive event and song coverage dashboard",
+  title: "LoveLive 现场听歌覆盖率统计",
+  description: "输入 Eventernote 用户名，统计 LoveLive 现场听歌覆盖率。",
 };
 
 export default function RootLayout({
