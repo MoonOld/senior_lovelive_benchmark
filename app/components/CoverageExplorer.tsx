@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties, FormEvent, KeyboardEvent } from "react";
 
 type CoverageSummary = {
   handle?: string;
@@ -60,6 +61,17 @@ type ApiError = {
 };
 
 const DEMO_HANDLE = "Tetsuya_Ryusei";
+const GROUP_THEMES: Record<string, { color: string; soft: string; deep: string }> = {
+  Aqours: { color: "#1597e5", soft: "rgba(21, 151, 229, 0.13)", deep: "#0867a3" },
+  "μ’s": { color: "#f05ca8", soft: "rgba(240, 92, 168, 0.14)", deep: "#b52d77" },
+  虹ヶ咲学園スクールアイドル同好会: { color: "#f59e0b", soft: "rgba(245, 158, 11, 0.15)", deep: "#ad6500" },
+  "Liella!": { color: "#7c5cff", soft: "rgba(124, 92, 255, 0.13)", deep: "#4d35c6" },
+  蓮ノ空女学院スクールアイドルクラブ: { color: "#10b981", soft: "rgba(16, 185, 129, 0.13)", deep: "#087a57" },
+  "いきづらい部！": { color: "#ef4444", soft: "rgba(239, 68, 68, 0.12)", deep: "#b91c1c" },
+  幻日のヨハネ: { color: "#4f46e5", soft: "rgba(79, 70, 229, 0.13)", deep: "#312e81" },
+  スクールアイドルミュージカル: { color: "#14b8a6", soft: "rgba(20, 184, 166, 0.13)", deep: "#0f766e" },
+};
+const DEFAULT_GROUP_THEME = { color: "#ff5c9a", soft: "rgba(255, 92, 154, 0.13)", deep: "#bd2c62" };
 
 export function CoverageExplorer() {
   const [handle, setHandle] = useState("");
@@ -133,6 +145,7 @@ export function CoverageExplorer() {
               试用 {DEMO_HANDLE}
             </button>
             <span>接口：GET /api/coverage?handle=&lt;username&gt;</span>
+            <span>本站不会保存查询的用户名或统计结果</span>
           </div>
           {error ? <p className="form-error">{error}</p> : null}
         </form>
@@ -152,11 +165,6 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
   );
   const [selectedGroupName, setSelectedGroupName] = useState(groups[0]?.[0] ?? "");
   const selectedGroup = selectedGroupName ? coverage.groups[selectedGroupName] : undefined;
-  const issueCount =
-    (coverage.issues?.unknown_event_ids?.length ?? 0) +
-    (coverage.issues?.events_without_match?.length ?? 0) +
-    (coverage.issues?.missing_setlists?.length ?? 0) +
-    (coverage.issues?.unassigned_songs?.length ?? 0);
 
   useEffect(() => {
     if (!groups.some(([groupName]) => groupName === selectedGroupName)) {
@@ -177,9 +185,7 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
       <div className="stats-grid">
         <Metric label="Eventernote 活动" value={summary.user_event_count ?? 0} />
         <Metric label="LoveLive 活动" value={summary.matched_lovelive_event_count ?? 0} />
-        <Metric label="匹配 Setlist" value={summary.matched_setlist_count} />
         <Metric label="听过歌曲" value={summary.unique_heard_song_count} />
-        <Metric label="待核对问题" value={issueCount} />
       </div>
 
       <div className="group-grid">
@@ -192,6 +198,7 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
             onClick={() => setSelectedGroupName(groupName)}
             onKeyDown={(event) => handleGroupCardKeyDown(event, () => setSelectedGroupName(groupName))}
             role="button"
+            style={groupThemeStyle(groupName)}
             tabIndex={0}
           >
             <div className="group-topline">
@@ -225,7 +232,9 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
         ))}
       </div>
 
-      {selectedGroup ? <GroupSongDetail group={selectedGroup} groupName={selectedGroupName} /> : null}
+      {selectedGroup ? (
+        <GroupSongDetail group={selectedGroup} groupName={selectedGroupName} style={groupThemeStyle(selectedGroupName)} />
+      ) : null}
 
       <section className="events-panel">
         <div className="section-title">
@@ -239,8 +248,8 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
                 {event.title}
               </a>
               <span>
-                {[event.event_date ?? "unknown", event.start_time].filter(Boolean).join(" ")} · setlists=
-                {event.matched_setlists?.length ?? 0} · songs={event.heard_song_count ?? 0}
+                {[event.event_date ?? "unknown", event.start_time].filter(Boolean).join(" ")} · songs=
+                {event.heard_song_count ?? 0}
               </span>
             </li>
           ))}
@@ -250,9 +259,9 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
   );
 }
 
-function GroupSongDetail({ group, groupName }: { group: GroupCoverage; groupName: string }) {
+function GroupSongDetail({ group, groupName, style }: { group: GroupCoverage; groupName: string; style: CSSProperties }) {
   return (
-    <section className="song-detail-panel">
+    <section className="song-detail-panel" style={style}>
       <div className="section-title detail-title">
         <div>
           <p className="eyebrow">Song Detail</p>
@@ -355,4 +364,13 @@ function Metric({ label, value }: { label: string; value: number | string }) {
       <strong>{value}</strong>
     </div>
   );
+}
+
+function groupThemeStyle(groupName: string): CSSProperties {
+  const theme = GROUP_THEMES[groupName] ?? DEFAULT_GROUP_THEME;
+  return {
+    "--group-color": theme.color,
+    "--group-soft": theme.soft,
+    "--group-deep": theme.deep,
+  } as CSSProperties;
 }

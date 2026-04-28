@@ -274,7 +274,7 @@ h3 {
 }
 
 .stats-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .metric,
@@ -325,9 +325,20 @@ h3 {
     transform 0.2s ease;
 }
 
+.group-card::before {
+  background: var(--group-color, var(--accent));
+  border-radius: 999px;
+  content: "";
+  height: 5px;
+  left: 20px;
+  position: absolute;
+  right: 20px;
+  top: 0;
+}
+
 .group-card:hover,
 .group-card:focus-visible {
-  border-color: rgba(255, 92, 154, 0.32);
+  border-color: color-mix(in srgb, var(--group-color, var(--accent)) 42%, transparent);
   box-shadow: 0 22px 58px rgba(95, 54, 90, 0.16);
   outline: 0;
   transform: translateY(-2px);
@@ -335,10 +346,10 @@ h3 {
 
 .group-card.is-selected {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 239, 247, 0.78)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), var(--group-soft, rgba(255, 239, 247, 0.78))),
     var(--panel);
-  border-color: rgba(255, 92, 154, 0.46);
-  box-shadow: 0 24px 64px rgba(255, 92, 154, 0.16);
+  border-color: color-mix(in srgb, var(--group-color, var(--accent)) 52%, transparent);
+  box-shadow: 0 24px 64px color-mix(in srgb, var(--group-color, var(--accent)) 18%, transparent);
 }
 
 .group-topline {
@@ -353,7 +364,7 @@ h3 {
 }
 
 .group-topline strong {
-  color: var(--accent);
+  color: var(--group-color, var(--accent));
   font-size: 24px;
   letter-spacing: -0.04em;
 }
@@ -367,7 +378,7 @@ h3 {
 }
 
 .progress div {
-  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+  background: linear-gradient(90deg, var(--group-color, var(--accent)), color-mix(in srgb, var(--group-color, var(--accent)) 50%, #ffffff));
   border-radius: inherit;
   height: 100%;
 }
@@ -402,7 +413,7 @@ h3 {
 }
 
 .card-action {
-  color: var(--accent-2);
+  color: var(--group-deep, var(--accent-2));
   font-size: 13px;
   font-weight: 800;
   margin-top: 14px;
@@ -410,12 +421,16 @@ h3 {
 
 .song-detail-panel {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(248, 244, 251, 0.82)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), var(--group-soft, rgba(248, 244, 251, 0.82))),
     var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--group-color, var(--accent)) 22%, var(--border));
   border-radius: 32px;
   box-shadow: var(--shadow);
   padding: 24px;
+}
+
+.song-detail-panel h2 {
+  color: var(--group-deep, var(--text));
 }
 
 .detail-title {
@@ -440,7 +455,7 @@ h3 {
 }
 
 .song-status-column.covered {
-  background: rgba(16, 182, 166, 0.08);
+  background: color-mix(in srgb, var(--group-color, var(--accent)) 10%, #ffffff);
 }
 
 .song-status-column.uncovered {
@@ -471,8 +486,8 @@ h3 {
 }
 
 .covered .status-dot {
-  background: var(--accent-3);
-  box-shadow: 0 0 0 5px rgba(16, 182, 166, 0.14);
+  background: var(--group-color, var(--accent-3));
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--group-color, var(--accent-3)) 16%, transparent);
 }
 
 .uncovered .status-dot {
@@ -514,7 +529,7 @@ h3 {
 }
 
 .song-detail-item.is-covered {
-  border-color: rgba(16, 182, 166, 0.22);
+  border-color: color-mix(in srgb, var(--group-color, var(--accent-3)) 28%, transparent);
 }
 
 .song-detail-item.is-uncovered {
@@ -532,8 +547,8 @@ h3 {
 }
 
 .song-badge.covered {
-  background: rgba(16, 182, 166, 0.13);
-  color: #087c72;
+  background: color-mix(in srgb, var(--group-color, var(--accent-3)) 14%, #ffffff);
+  color: var(--group-deep, #087c72);
 }
 
 .song-badge.uncovered {
