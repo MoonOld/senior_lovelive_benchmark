@@ -229,20 +229,18 @@ function CoverageResult({ coverage }: { coverage: CoverageAnalysis }) {
             <div className="progress">
               <div style={{ width: `${Math.min(group.coverage_percent, 100)}%` }} />
             </div>
-            <ul className="mini-list">
-              {group.heard_songs.slice(0, 4).map((song) => (
-                <li key={song.source_song_id}>
-                  <span>{song.title}</span>
-                  <small>{song.first_heard_at ?? "unknown"}</small>
-                </li>
-              ))}
-              {group.heard_songs.length === 0 ? (
-                <li>
-                  <span>这个团暂时还没开张</span>
-                  <small>0 songs</small>
-                </li>
-              ) : null}
-            </ul>
+            {group.heard_songs.length > 0 ? (
+              <ul className="mini-list">
+                {group.heard_songs.slice(0, 4).map((song) => (
+                  <li key={song.source_song_id}>
+                    <span title={song.title}>{song.title}</span>
+                    <small>{song.first_heard_at ?? "unknown"}</small>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="card-empty">小资历 ylg 养成中，下一场就来点亮这里</div>
+            )}
             <div className="card-action">展开资历明细</div>
           </article>
         ))}
